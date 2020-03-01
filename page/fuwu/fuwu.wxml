@@ -14,7 +14,7 @@
 <view class="cart-tab-wrp">
   <view class="cart-item-total cart-tab-item">
     <view>
-      <image style="width:55rpx;height:40rpx;display:inline-block;overflow:hidden;margin-top:25rpx;z-index:9999" src="../resources/pic/return.png" catchtap="bindback" />
+      <image style="width:55rpx;height:40rpx;display:inline-block;overflow:hidden;margin-top:25rpx;z-index:9999" src="../resources/images/return.png" catchtap="bindback" />
     </view>
   </view>
   <view class="cart-tab-item">

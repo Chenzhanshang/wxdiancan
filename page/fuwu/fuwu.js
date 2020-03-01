@@ -1,15 +1,11 @@
 /*----------------------------------------------------------------
-    Copyright (C) 2019 筱程 wechatscan.com 
-  
-    文件名：fuwu/index
+
+    文件名：fuwu.js
     文件功能描述：服务
-    
+        
 ----------------------------------------------------------------*/
-// page/shop/index.js
 var imageUtil = require('../../util/autoheight.js')
 var util = require('../../util/util.js')
-var qcloud = require('../../util/vendor/qcloud-weapp-client-sdk/index')
-var config = require('../../config')
 var app = getApp()
 Page({
   data: {
@@ -40,10 +36,10 @@ Page({
     wx.navigateBack({
       delta: 1, // 回退前 delta(默认为1) 页面
       success: function (res) {
-        console.log('返回ok')
+        console.log('返回成功')
       },
       fail: function () {
-        console.log('返回fail')
+        console.log('返回失败')
       },
       complete: function () {
         // complete
@@ -58,14 +54,14 @@ Page({
   bindsubmit: function (event) {
     var that = this
     var beizhu=''
-    if (that.data.fuwuNeirong == '' && that.data.fuwuBeizhu =='')
+    if (that.data.fuwuNeirong == '')
     {
-      util.showFailModal('发送内容不能为空')
+      util.showFailModal('提示', '请选择服务类型');
       return;
     }
     if (that.data.fuwuBeizhu !='')
       beizhu = ' ' + that.data.fuwuBeizhu
-    var fuwuContent = app.globalData.aZhuozi.zhuozimingcheng + '需要：' + that.data.fuwuNeirong + beizhu
+    var fuwuContent = '用户需要：' + that.data.fuwuNeirong + '备注：' +beizhu
     wx.showModal({
       title: '即将发商户处理：',
       content: fuwuContent,
@@ -75,98 +71,14 @@ Page({
         console.log('that.fuwuContent:',fuwuContent);
         if (res.confirm) {
           var ret = true;
-          var msg = '';
-          var tempdata = {
-            fuwuContent: fuwuContent,             
-            zhuoziid: app.globalData.zhuoziid,
-            hasLogin: app.globalData.hasLogin,
-            userInfo: JSON.stringify(app.globalData.userInfo),             
-          };
-          util.showBusy;
-          qcloud.request({
-            url: config.service.fuwuyuanUrl,
-            hasLogin: app.globalData.hasLogin,
-            data: tempdata,
-            success(result) {
-              if (result.statusCode == "200") {
-                if (result.data.code == "200") {
-                  let ret = true;
-                  let msg = result.data.message;                  
-                  wx.showModal({
-                    title: '',
-                    content: msg,
-                    showCancel: false,
-                    complete: function (res) {
-                      if (ret) {
-                        wx.switchTab({
-                          url: '/page/my/my'
-                        })
-                      }
-                    }
-                  })
-                }
-                else {
-                  let ret = false;
-                  let msg = '出现异常，错误代码：' + result.data.code;
-                  wx.showModal({
-                    title: '订单处理结果：',
-                    content: msg,
-                    showCancel: false,
-                    complete: function (res) {
-                      if (ret) {
-                        wx.switchTab({
-                          url: '/page/my/my'
-                        })
-                      }
-                      else {
-                        util.navigateBack1;
-                      }
-                    }
-                  })
-                  //directret(false, '下单出现异常，请联系客服！' + '错误代码：' + result.data.code);
-                }
-              }
-              else {
-                let ret = false;
-                let msg = '请求失败，' + '错误代码：' + result.statusCode;
-                console.log(msg);
-                console.log(result);
-                wx.showModal({
-                  title: '订单处理结果：',
-                  content: msg,
-                  showCancel: false,
-                  complete: function (res) {
-                    if (ret) {
-                      wx.switchTab({
-                        url: '/page/my/my'
-                      })
-                    }
-                    else {
-                      util.navigateBack1;
-                    }
-                  }
-                })
-              }
-              app.globalData.moshi = ''
-              app.globalData.jiacaiDingdanno = ''
-            },
-            fail(error) {
-              let ret = false;
-              let msg = '请求失败' + error;
-              wx.showModal({
-                title: '订单处理结果：',
-                content: msg,
-                showCancel: false,
-                complete: function (res) {
-                  if (ret) {
-                    wx.switchTab({
-                      url: '/page/my/my'
-                    })
-                  }
-                  else {
-                    util.navigateBack1;
-                  }
-                }
+          var msg = '发送成功。店长已收到消息，请稍等。';               
+          wx.showModal({
+            title: '',
+            content: msg,
+            showCancel: false,
+            complete: function (res) {
+              wx.switchTab({
+                url: '/page/my/my'
               })
             }
           });
@@ -196,10 +108,4 @@ Page({
   onUnload: function () {
     // 页面关闭
   },
-  onShareAppMessage: function () {
-    return {
-      title: app.globalData.aFendian.fendianmingcheng + '-' + app.globalData.aZhuozi.zhuozimingcheng,
-      path: '/page/shop/shop?zhuoziid=' + app.globalData.zhuoziid
-    }
-  }
 })

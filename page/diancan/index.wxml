@@ -31,14 +31,15 @@
         </block>
         <block wx:elif="true">
           <view>
-            <image class="cart-item-total-car-button" src="http://gongyong-1253225512.file.myqcloud.com/xiaochengxu/orderBoxRight.png" />
+            <image class="cart-item-total-car-button" src="/page/resources/images/orderBox.png"/>
           </view>
         </block>
       </view>
     </view>
     <view class="cart-tab-item">
       <text class="cart-item-total-price">¥{{total.money}}</text>
-      <navigator url="../thisorder/thisorder" class="cart-tab-item-btn" hover-class="navigator-hover">下一步</navigator>
+      <navigator url="../thisorder/thisorder" class="cart-tab-item-btn" hover-class="navigator-hover" wx:if="{{moshi != '（加菜）'}}">下一步</navigator>
+      <view bindtap="jiacaitijiao" class="cart-tab-item-btn" hover-class="navigator-hover" wx:if="{{moshi == '（加菜）'}}">提交</view>
     </view>
   </view>
   <view class="menu-wrp">
@@ -49,7 +50,7 @@
           <view class="{{selectedMenuId == menu.id ? 'type_none_select' : 'type_none'}}">
             <view>
               <view class="type_none_text">{{menu.fenleimingcheng}}</view>
-              <view hidden="{{menu.url== null ||menu.url== 0}}" class="cart-item-total-num bc_red">{{menu.url}}</view>
+              <view hidden="{{menu.sum == null ||menu.sum == 0}}" class="cart-item-total-num bc_red">{{menu.sum}}</view>
             </view>
           </view>
         </view>
@@ -65,7 +66,7 @@
               <view class="dish-item-wrp">
                 <view class="dish-item-select" style="" data-id="{{dish.id}}" data-cid="{{menu.id}}" bindtap="{{dish.count == 0? 'addCount' : ''}}">
                   <view>
-                    <image hidden="{{dish.count != 0}}" class="image" src="../resources/pic/countSelect.png" />
+                    <image hidden="{{dish.count != 0}}" class="image" src="../resources/images/countSelect.png" />
                   </view>
                 </view>
                 <view class="dish-item-info" style="" data-id="{{dish.id}}" data-cid="{{menu.id}}" bindtap="{{dish.count == 0? 'addCount' : ''}}">
@@ -74,14 +75,12 @@
                   </view>
                   <block wx:if="{{dish.xiaoshoujia != dish.huiyuanjia}}">
                     <view>
-                      <view hidden="{{dish.count == 0||dish.fendianid>0}}" class="select-whole-right active">{{dish.fendianmingcheng}}</view>
                       <text class="dish-item-money_nouse">¥{{dish.xiaoshoujia}}</text>
                       <text class="dish-item-money">¥{{dish.huiyuanjia}}/{{dish.danwei}}</text>
                     </view>
                   </block>
                   <block wx:elif="true">
                     <view>
-                      <view hidden="{{dish.count == 0||dish.fendianid>0}}" class="select-whole-right active">{{dish.fendianmingcheng}}</view>
                       <text class="dish-item-money">¥{{dish.huiyuanjia}}/{{dish.danwei}}</text>
                     </view>
                   </block>
@@ -89,14 +88,14 @@
                 <view class="dish-item-count" style="">
                   <view class="dish-item-tab">
                     <view hidden="{{dish.count == 0}}" class="dish-item-count-minus" data-id="{{dish.id}}" data-cid="{{menu.id}}" bindtap="minusCount">
-                      <image class="image120" src="../resources/pic/countMinus.png" />
+                      <image class="image120" src="../resources/images/countMinus.png" />
                     </view>
                   </view>
                   <view class="dish-item-count-text dish-item-tab">
                     <text hidden="{{dish.count == 0}}">{{dish.count}}</text>
                   </view>
                   <view class="dish-item-count-plus" data-id="{{dish.id}}" data-cid="{{menu.id}}" bindtap="addCount">
-                    <image hidden="{{dish.count == 0}}" class="image120" src="../resources/pic/countSelAdd.png" />
+                    <image hidden="{{dish.count == 0}}" class="image120" src="../resources/images/countSelAdd.png" />
                   </view>
                   <view class="dish-item-pic">
                     <image hidden="{{dish.count != 0}}" class="image" src="{{dish.url}}" data-id="{{dish.id}}" data-cid="{{menu.id}}" bindtap="selectItem" />
@@ -113,7 +112,7 @@
   <view class="goods-detail" hidden="{{!showGoodsDetail}}">
     <view class="mask" bindtap="hideGoodsDetail"></view>
     <div class="close-bg" bindtap="hideGoodsDetail">
-      <image class="image" src="../resources/pic/dish-close.png" />
+      <image class="image" src="../resources/images/dish-close.png" />
     </div>
     <view class="goodsdetail">
       <swiper class="banner" indicator-dots="true" autoplay="true" interval="3000" duration="500">
@@ -123,11 +122,11 @@
       </swiper>
       <view class="title1">{{goodsDetailName}}</view>
       <view class="title3" hidden="{{goodsDetailTuijian==0}}">推荐星级：
-        <image src="../resources/pic/star.jpg"></image>
-        <image hidden="{{goodsDetailTuijian<2}}" src="../resources/pic/star.jpg"></image>
-        <image hidden="{{goodsDetailTuijian<3}}" src="../resources/pic/star.jpg"></image>
-        <image hidden="{{goodsDetailTuijian<4}}" src="../resources/pic/star.jpg"></image>
-        <image hidden="{{goodsDetailTuijian<5}}" src="../resources/pic/star.jpg"></image>
+        <image src="../resources/images/star.jpg"></image>
+        <image hidden="{{goodsDetailTuijian<2}}" src="../resources/images/star.jpg"></image>
+        <image hidden="{{goodsDetailTuijian<3}}" src="../resources/images/star.jpg"></image>
+        <image hidden="{{goodsDetailTuijian<4}}" src="../resources/images/star.jpg"></image>
+        <image hidden="{{goodsDetailTuijian<5}}" src="../resources/images/star.jpg"></image>
       </view>
       <block wx:if="{{goodsDetailMemo != ''}}">
         <view class="title2">{{goodsDetailMemo}}</view>
@@ -137,16 +136,7 @@
           <!--<text hidden="{{goodsDetailSalePrice != goodsDetailMenberPrice}}" class="dish-item-money_nouse_detail">¥{{goodsDetailSalePrice}}</text>-->
           <text class="dish-item-money_detail">¥{{goodsDetailMenberPrice}}/{{goodsDetailDanwei}}</text>
         </view>
-        <view class="title6" data-id="{{goodsDetailId}}" data-cid="{{goodsDetailMenuId}}" data-hide="true" bindtap="addCount">添加到订单</view>
-      </view>
-      <view class="title5">
-        <block wx:for="{{currGoods.kouWeiList}}" wx:key="id" wx:for-item="aKouWei">
-          <view data-id="{{aKouWei.id}}" data-name="{{aKouWei.kouweimingcheng}}" bindtap="selectKouWei">
-            <view class="{{currGoods.fendianmingcheng == aKouWei.kouweimingcheng ? 'select-whole active' : 'select-whole'}}">
-              <view class="activeText">{{aKouWei.kouweimingcheng}}</view>
-            </view>
-          </view>
-        </block>
+        <view class="title6" data-id="{{goodsDetailId}}" data-cid="{{goodsDetailMenuId}}"  data-hide="true" bindtap="addCount">添加到订单</view>
       </view>
     </view>
   </view>

@@ -2,7 +2,7 @@
   <view class="cart-tab-wrp">
     <view class="cart-item-total cart-tab-item">
       <view>
-        <image style="width:55rpx;height:40rpx;display:inline-block;overflow:hidden;margin-top:25rpx;z-index:9999" src="../resources/pic/return.png" catchtap="bindback" />
+        <image style="width:55rpx;height:40rpx;display:inline-block;overflow:hidden;margin-top:25rpx;z-index:9999" src="../resources/images/return.png" catchtap="bindback" />
       </view>
       <view class="cart-item-icon-wrp">
         <block wx:if="{{total.count != 0}}">
@@ -10,13 +10,13 @@
         </block>
         <block wx:elif="true">
           <view>
-            <image class="cart-item-total-car-button" src="http://gongyong-1253225512.file.myqcloud.com/xiaochengxu/orderBoxRight.png" />
+            <image class="cart-item-total-car-button" src="../resources/images/orderBoxRight.png" />
           </view>
         </block>
       </view>
     </view>
     <view class="cart-tab-item">
-      <text class="cart-item-total-price">¥{{(total.money*100- youhuiquanJine*100)/100}}</text>
+      <text class="cart-item-total-price">¥{{total.money}}</text>
       <view bindtap="bindsubmit" hidden="{{!total.count > 0}}" class="cart-tab-item-btn" hover-class="navigator-hover">{{aFendian.zhifu?' 支 付 ':' 提 交 '}}</view>
     </view>
   </view>
@@ -31,7 +31,7 @@
         </label>
       </radio-group>
     </view>
-    <view class="section" hidden="{{aLeixing== '打包带走'||aLeixing== '外卖' }}">
+    <view class="section" hidden="{{aLeixing== '打包'||aLeixing== '外卖' }}">
       <view class="section__title">人数：</view>
       <picker bindchange="bindRenshuChange" value="{{renshuIndex}}" range="{{renshuArray}}">
         <view class="select_wrap">
@@ -39,7 +39,7 @@
             {{renshuArray[renshuIndex]}}
           </view>
           <view>
-            <image class="image_dropdown" src="../resources/pic/dropdown.png" />
+            <image class="image_dropdown" src="../resources/images/dropdown.png" />
           </view>
         </view>
       </picker>
@@ -53,7 +53,7 @@
               {{daoDianArray[daoDianIndex]}}
             </view>
             <view>
-              <image class="image_dropdown" src="../resources/pic/dropdown.png" />
+              <image class="image_dropdown" src="../resources/images/dropdown.png" />
             </view>
           </view>
         </picker>
@@ -63,17 +63,17 @@
               {{time}}
             </view>
             <view>
-              <image class="image_dropdown" src="../resources/pic/dropdown.png" />
+              <image class="image_dropdown" src="../resources/images/dropdown.png" />
             </view>
           </view>
         </picker>
       </view>
     </view>
-    <view class="section" hidden="{{aLeixing== '堂食'||aLeixing== '打包带走' }}">
+    <view class="section" hidden="{{aLeixing== '堂食'||aLeixing== '打包' }}">
       <view class="section__title">外卖地址：</view>
       <input class="input_waimaidizhi" maxlength="200" placeholder="" bindblur="bindWaiMaiDiZhiblur" value="{{aWaiMaiDiZhi}}"></input>
     </view>
-    <view class="section" hidden="{{aLeixing== '堂食' || aLeixing== '打包带走' }}">
+    <view class="section" hidden="{{aLeixing== '堂食' || aLeixing== '打包' }}">
       <view class="section__title">联系电话：</view>
       <input class="input_waimaidizhi" maxlength="200" placeholder="" bindblur="bindLianXiDianHuablur" value="{{aLianXiDianHua}}"></input>
     </view>
@@ -86,10 +86,6 @@
         <view  class="label_left">账户余额：</view>
         <view class="label_right">¥{{aKehu && aKehu.shengyujine && aKehu.shengyujine != 'null' ?aKehu.shengyujine:'0.00'}}</view>
       </view>
-      <view class="section_half_right" hidden="{{youhuiquanJine==0}}">
-        <view  class="label_left">优惠券：</view>
-        <view class="label_right">节省¥{{youhuiquanJine}}</view>
-      </view>
     </view>
   </view>
   <view>
@@ -100,7 +96,6 @@
       <view class="dish-header"></view>
       <block wx:for="{{menus}}" wx:key="id" wx:for-item="menu">
         <view>
-          <!-- <view hidden="{{menu.url== null ||menu.url== 0}}" id="{{menu.tag}}" class="dish-category-title">{{menu.fenleimingcheng}}</view> -->
           <block wx:for="{{menu.dishs}}" wx:key="id" wx:for-item="dish">
             <view hidden="{{dish.count == 0}}" class="dish-item">
               <view class="dish-item-wrp">
@@ -115,27 +110,25 @@
                     <view>
                       <text class="dish-item-money_nouse">¥{{dish.xiaoshoujia}}/{{dish.danwei}}</text>
                       <text class="dish-item-money">¥{{dish.huiyuanjia}}/{{dish.danwei}}</text>
-                      <view hidden="{{dish.count == 0||dish.fendianid>0}}" class="select-whole-right active">{{dish.fendianmingcheng}}</view>
                     </view>
                   </block>
                   <block wx:elif="true">
                     <view>
                       <text class="dish-item-money">¥{{dish.huiyuanjia}}/{{dish.danwei}}</text>
-                      <view hidden="{{dish.count == 0||dish.fendianid>0}}" class="select-whole-right active">{{dish.fendianmingcheng}}</view>
                     </view>
                   </block>
                 </view>
                 <view class="dish-item-count" style="">
                   <view class="dish-item-tab">
                     <view hidden="{{dish.count == 0}}" class="dish-item-count-minus" data-id="{{dish.id}}" data-cid="{{menu.id}}" bindtap="minusCount">
-                      <image class="image120" src="../resources/pic/countMinus.png" />
+                      <image class="image120" src="../resources/images/countMinus.png" />
                     </view>
                   </view>
                   <view class="dish-item-count-text dish-item-tab">
                     <text hidden="{{dish.count == 0}}">{{dish.count}}</text>
                   </view>
                   <view class="dish-item-count-plus" data-id="{{dish.id}}" data-cid="{{menu.id}}" bindtap="addCount">
-                    <image class="image120" src="../resources/pic/countSelAdd.png" />
+                    <image class="image120" src="../resources/images/countSelAdd.png" />
                   </view>
                 </view>
               </view>

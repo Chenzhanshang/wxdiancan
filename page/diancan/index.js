@@ -1,36 +1,38 @@
 /*----------------------------------------------------------------
-    Copyright (C) 2019 筱程 wechatscan.com 
-  
-    文件名：diancan/index
+
+    文件名：index.js
     文件功能描述：点餐首页
-    
+        
 ----------------------------------------------------------------*/
-/*import allmenu from '../../page/resources/json/menus.js'*/
 var util = require('../../util/util.js')
 var app = getApp()
-var qcloud = require('../../util/vendor/qcloud-weapp-client-sdk/index');
-var config = require('../../config');
-var util = require('../../util/util.js');
-var QQMapWX = require('../../util/qqmap-wx-jssdk.js');
-var qqmapsdk;
-//几个栏位错用 cai.fendianid 用于口味id cai.fendianmingcheng用于口味名称 
-//fenlei.url用于分类数量累计
 Page({
   data: {
     duration: 1200,
+    moshi:null,
     toView: 'blue',
     menus: app.globalData.menus,
+    //选择菜单项
     selectedMenuId: 1,
+    //已选商品合计
     total: app.globalData.total,
+    //显示商品详情
     showGoodsDetail: false,
+    //商品图片链接
     goodsDetailUrl: '',
+    //商品名称
     goodsDetailName: '',
-    goodsDetailMemo: '',
+    //售价
     goodsDetailSalePrice: 0.00,
+    //会员价
     goodsDetailMenberPrice: 0.00,
-    goodsDetailDanwei: '例',
+    //商品单位
+    goodsDetailDanwei: '份',
+    //商品推荐星数
     goodsDetailTuijian: 0,
+    //商品id
     goodsDetailId: 0,
+    //商品所属种类
     goodsDetailMenuId: 0,
     animationData: {},
     hidAnim: true,
@@ -41,15 +43,12 @@ Page({
     targetX: 200,
     targetY: 600,
     currGoods: null,
-    selectedKouWeiMingCheng: '',
-    canDiancan: true, //因地理位置限制 是否限制用户看本店菜单
-    userDenyLocaltion: false, //用户拒绝地理位置授权，需要显示“重新获取地理位置”
-    canDiancanChangjing: true,
-    yincangShouquan: true, //隐藏用户授权
     aFendian: {},//分店对象
-    aZhuozi: {},//桌子对象
-    aKehu: {}//分店对象
+    canDiancan: true, //显示因地理位置限制 限制用户看本店菜单
+    canDiancanChangjing: true,//是否显示提示扫描二维码
+    yincangShouquan: true, //隐藏用户授权
   },
+  //选择商品类型
   selectMenu: function (event) {
     let data = event.currentTarget.dataset
     this.setData({
@@ -57,36 +56,31 @@ Page({
       selectedMenuId: data.id
     })
   },
-  selectKouWei: function (event) {
-    let data = event.currentTarget.dataset
-    util.arrfind(util.arrfind(app.globalData.menus, this.data.currGoods.fenleiid).dishs, this.data.currGoods.id).fendianid = 0;
-    util.arrfind(util.arrfind(app.globalData.menus, this.data.currGoods.fenleiid).dishs, this.data.currGoods.id).fendianmingcheng = data.name;
-    this.setData({
-      'menus': app.globalData.menus,
-      currGoods: util.arrfind(util.arrfind(app.globalData.menus, this.data.currGoods.fenleiid).dishs, this.data.currGoods.id)
-    })
-  },
+  //数量增加
   addCount: function (event) {
+    console.log(event)
     let data = event.currentTarget.dataset
     let menu = util.arrfind(this.data.menus, data.cid)
     let aDish = util.arrfind(menu.dishs, data.id)
-    if (aDish != null && aDish.kouWeiList != null && aDish.fendianid > 0 && data.hide != 'true') {
+    console.log(aDish)
+    //如果商品存在
+    //思考，为什么去掉aDish.kouWeiList != null出错-----------------------------------
+    if (aDish != null && aDish.kouWeiList != null && data.hide != 'true') {
       this.selectItem(event);
       return
     }
-    if (menu.url == null) {
-      menu.url = 0;
-      util.arrfind(app.globalData.menus, data.cid).url = 0;
+    //如果当前该类商品为首次选择
+    if (menu.sum == null) {
+      menu.sum = 0;
+      util.arrfind(app.globalData.menus, data.cid).sum = 0;
     }
+    //如果详情显示，关闭
     if (data.hide == 'true') {
-      if (aDish != null && aDish.kouWeiList != null && aDish.fendianid > 0) {
-        util.showFailModal('提示', '请选择口味或做法。');
-        return
-      }
       this.hideGoodsDetail();
     }
-    menu.url += 1;
-    util.arrfind(app.globalData.menus, data.cid).url += 1;
+    //该类所选数量加1
+    menu.sum += 1;
+    util.arrfind(app.globalData.menus, data.cid).sum += 1;
     let dish = util.arrfind(menu.dishs, data.id)
     dish.count += 1;
     this.data.total.count += 1
@@ -95,7 +89,7 @@ Page({
     app.globalData.total.money = (parseFloat(app.globalData.total.money) + parseFloat(dish.huiyuanjia)).toFixed(2)
     util.arrfind(util.arrfind(app.globalData.menus, data.cid).dishs, data.id).count += 1;
 
-    // 获取click事件Y坐标
+    // 获取click事件坐标
     var tranX = event.touches[0].pageX - this.data.targetX;
     var tranY = event.touches[0].pageY - this.data.targetY;
     this.setData({
@@ -106,6 +100,7 @@ Page({
       Y: event.touches[0].pageY - tranY
     })
 
+    //制作动画
     var aAnimation = wx.createAnimation({
       duration: 100,
       timingFunction: 'linear',
@@ -114,12 +109,10 @@ Page({
     this.animation = aAnimation
 
     //回来
-    // setTimeout(function () {
     aAnimation.translate(tranX, tranY).step()
     this.setData({
       animationData: aAnimation.export()
     })
-    //}.bind(this), 500);
     //下去
     this.setData({
       hidAnim: false
@@ -142,11 +135,12 @@ Page({
     this.data.lastX = event.touches[0].pageX;
     this.data.lastY = event.touches[0].pageY;
   },
+  //减少商品数量
   minusCount: function (event) {
     let data = event.currentTarget.dataset
     let menu = util.arrfind(this.data.menus, data.cid)
-    menu.url = menu.url - 1;
-    util.arrfind(app.globalData.menus, data.cid).url -= 1;
+    menu.sum = menu.sum - 1;
+    util.arrfind(app.globalData.menus, data.cid).sum -= 1;
     let dish = util.arrfind(menu.dishs, data.id)
     if (dish.count <= 0)
       return
@@ -161,12 +155,62 @@ Page({
       total: this.data.total
     })
   },
+
+  //加菜提交
+  jiacaitijiao:function(event){
+    var that = this
+    console.log(JSON.stringify(util.getThisOrder(app.globalData.menus)))
+    var menus = JSON.stringify(util.getThisOrder(app.globalData.menus))
+    menus = menus.substr(1,menus.length - 1)
+    console.log(menus)
+    var orderList = new Array()
+    wx.getStorage({
+      key: 'orderList',
+      success: function(res) {
+        console.log(res.data)
+        orderList = res.data
+        for (let i = 0; i < orderList.length;i++){
+          if (orderList[i].dingdanno == app.globalData.jiacaiDingdanno){
+            orderList[i].order = orderList[i].order.substr(0, orderList[i].order.length-1) + ',' + menus;
+            console.log(that.data.total.money)
+            //总价
+            orderList[i].zongxiaoshoujia = (parseFloat(orderList[i].zongxiaoshoujia) + parseFloat(that.data.total.money)).toFixed(2)
+            //应付价钱
+            orderList[i].yingfujia = (parseFloat(orderList[i].yingfujia) + parseFloat(that.data.total.money)).toFixed(2)
+            console.log(orderList)
+            break;
+          }
+        }
+        wx.removeStorageSync('orderList')
+        wx.setStorage({
+          key: 'orderList',
+          data: orderList,
+        })
+        wx.showToast({
+          title: '提交成功', success: res => {
+            app.globalData.moshi = ''
+            app.globalData.total.count = 0
+            app.globalData.total.money = 0
+            app.globalData.menus = util.resetMenu(app.globalData.menus);
+            //清空左边已选数量数字显示标识
+            for (let i = 0; i < app.globalData.menus.length; i++) {
+              app.globalData.menus[i].sum = null
+            }
+            wx.switchTab({
+              url: '/page/my/my',
+            })
+          }
+        })
+      },
+    })
+  },
+  
   selectItem: function (event) {
     let data = event.currentTarget.dataset
     let menu = util.arrfind(this.data.menus, data.cid)
-    if (menu.url == null) {
-      menu.url = 0;
-      util.arrfind(app.globalData.menus, data.cid).url = 0;
+    if (menu.sum == null) {
+      menu.sum = 0;
+      util.arrfind(app.globalData.menus, data.cid).sum = 0;
     }
     let dish = util.arrfind(menu.dishs, data.id)
 
@@ -174,7 +218,6 @@ Page({
       showGoodsDetail: true,
       goodsDetailUrl: dish.url,
       goodsDetailName: dish.caiming,
-      goodsDetailMemo: dish.memo,
       goodsDetailSalePrice: dish.xiaoshoujia,
       goodsDetailMenberPrice: dish.huiyuanjia,
       goodsDetailDanwei: dish.danwei,
@@ -184,11 +227,13 @@ Page({
       currGoods: dish
     })
   },
+  //隐藏商品详情
   hideGoodsDetail: function () {
     this.setData({
       showGoodsDetail: false
     });
   },
+  //显示商品详情
   showGoodsDetail: function () {
     this.setData({
       showGoodsDetail: true
@@ -196,26 +241,13 @@ Page({
   },
   onShow: function () {
     this.setData({
+      'moshi':app.globalData.moshi,
       'menus': app.globalData.menus,
       'total': app.globalData.total
     });
-
     wx.setNavigationBarTitle({
-      title: app.globalData.aFendian.fendianmingcheng + '-' + app.globalData.aZhuozi.zhuozimingcheng + app.globalData.moshi
+      title: app.globalData.aFendian.fendianmingcheng + '-' + '点餐' + app.globalData.moshi
     });
-  },
-  onReady: function () {
-    /*    setTimeout(function () {
-          util.hideBusy();
-        }.bind(this), 2000);*/
-  },
-  onLoad: function (params) {
-    util.showBusy('请稍候。。。');
-    var that = this
-    if (params.zhuoziid) {
-      app.globalData.zhuoziid = params.zhuoziid
-    }
-
     if (!app.globalData.hasLogin) {
       wx.login({
         success: function (loginResult) {
@@ -224,16 +256,22 @@ Page({
               app.globalData.hasLogin = true;
               userResult.userInfo.code = loginResult.code;
               app.globalData.userInfo = userResult.userInfo;
-              that.requestWrap();
             },
             fail: function (userError) {
-              app.globalData.hasLogin = false;
-              if (app.globalData.aFendian.zhifu){
-                that.setData({
-                  yincangShouquan: false
-                });
-              }
-              that.requestWrap();
+              //获取用户信息失败后。请跳转授权页面
+              //解决wx.getUserInfo弃用，不能弹出授权窗口问题
+              wx.showModal({
+                title: '警告',
+                content: '尚未进行授权，请点击确定跳转到授权页面进行授权。',
+                success: function (res) {
+                  if (res.confirm) {
+                    console.log('用户点击确定')
+                    wx.switchTab({
+                      url: '/page/my/my',
+                    })
+                  }
+                }
+              })
             },
           });
         },
@@ -246,253 +284,9 @@ Page({
         }
       });
     }
-    else {
-      that.requestWrap();
-    }
   },
-  onShareAppMessage: function () {
-    return {
-      title: app.globalData.aFendian.fendianmingcheng + '-' + app.globalData.aZhuozi.zhuozimingcheng,
-      path: '/page/shop/shop?zhuoziid=' + app.globalData.zhuoziid
-    }
+  onReady: function () {
   },
-  dorequest: function () {
-    var that = this
-    //请求数据
-    qcloud.request({
-      url: config.service.getMenuUrl,
-      hasLogin: app.globalData.hasLogin,
-      data: {
-        zhuoziid: app.globalData.zhuoziid,
-        hasLogin: app.globalData.hasLogin,
-        userInfo: JSON.stringify(app.globalData.userInfo),
-        phonemodel: app.globalData.phonemodel,
-        phonesystem: app.globalData.phonesystem,
-        networkType: app.globalData.networkType,
-        scene: app.globalData.scene
-      },
-      success: function (requestResult) {
-        if (requestResult.statusCode == 200)
-          if (requestResult.data.code == 200) {
-            app.globalData.menus = requestResult.data.data;
-            app.globalData.userInfo.openId = app.globalData.userInfo.openId  ? app.globalData.userInfo.openId: requestResult.data.openId;
-            app.globalData.userInfo.session_key = app.globalData.userInfo.session_key ? app.globalData.userInfo.session_key : requestResult.data.session_key;
-            app.globalData.aFendian = requestResult.data.aFendian;
-            app.globalData.aZhuozi = requestResult.data.aZhuozi;
-            app.globalData.aKehu = requestResult.data.aKehu;
-            that.setData({
-              'menus': app.globalData.menus,
-              'total': app.globalData.total,
-              aFendian: app.globalData.aFendian,
-              aZhuozi: app.globalData.aZhuozi,
-              aKehu: app.globalData.aKehu
-            });
-            wx.setNavigationBarTitle({
-              title: app.globalData.aFendian.fendianmingcheng + '-' + app.globalData.aZhuozi.zhuozimingcheng + app.globalData.moshi
-            });
-            //获取位置数据
-            console.log('app.globalData.aFendian.phonecity', app.globalData.aFendian.phonecity)
-            if (app.globalData.aFendian.phonecity == '' || app.globalData.aFendian.phonecity == null
-              || app.globalData.aFendian.phonecity == undefined) {
-              qqmapsdk = new QQMapWX({
-                key: 'PCLBZ-Q46LD-PO64S-PLAQW-ESMJF-RXBRZ'
-              });
-              // 调用接口
-              wx.getLocation({
-                type: 'gcj02',
-                success: function (res) {
-                  app.globalData.hasGeo = true
-                  app.globalData.aFendian.lat = res.latitude
-                  app.globalData.aFendian.lng = res.longitude
-                  qqmapsdk.reverseGeocoder({
-                    location: {
-                      latitude: app.globalData.aFendian.lat,
-                      longitude: app.globalData.aFendian.lng
-                    },
-                    success: function (res) {
-                      app.globalData.hasGeo = true
-                      if (res.status == 0) {
-                        app.globalData.aFendian.phoneaddress = res.result.address
-                        app.globalData.aFendian.phoneprovince = res.result.address_component.province
-                        app.globalData.aFendian.phonecity = res.result.address_component.city
-                        app.globalData.aFendian.phonedistrict = res.result.address_component.district
-                        app.globalData.aFendian.phonestreet = res.result.address_component.street
-                        app.globalData.aFendian.phonestreet_number = res.result.address_component.street_number
-                      }
-                      else {
-                        app.globalData.aFendian.address = res.status
-                      }
-                    },
-                    fail: function (res) {
-                      console.log(res);
-                    },
-                    complete: function (res) {
-                    }
-                  });
-                }
-              });
-            }
-            util.hideBusy();
-          }
-          else {
-            util.hideBusy();
-            util.showFailModal('提示', requestResult.data.code + ':' + requestResult.data.message);
-          }
-        else {
-          util.hideBusy();
-          util.showFailModal('网络错误：', requestResult.data.message);
-        }
-      },
-      fail: function (requestResult) {
-        util.hideBusy();
-        util.showFailModal('获取服务器数据失败。', requestResult);
-      },
-    });
-  },
-  requestWrap: function () {
-    var that = this
-
-    //判断是否在允许的范围内
-    if (app.globalData.aFendian.keyongbanjing > 0 && app.globalData.aFendian.lat > 0 && app.globalData.aFendian.lng > 0) {
-      //计算距离
-      qqmapsdk = new QQMapWX({
-        key: 'PCLBZ-Q46LD-PO64S-PLAQW-ESMJF-RXBRZ'
-      });
-      wx.getLocation({
-        type: 'gcj02',
-        success: function (res) {
-          qqmapsdk.calculateDistance({
-            mode: 'walking',
-            to: [{
-              latitude: app.globalData.aFendian.lat,
-              longitude: app.globalData.aFendian.lng
-            }],
-            success: function (res) {
-              if (res.status == 0) {
-                if (res.result.elements[0].distance < app.globalData.aFendian.keyongbanjing) {
-                  that.setData({
-                    userDenyLocaltion: false,
-                    canDiancan: true
-                  })
-                  that.dorequest()
-                }
-                else {
-                  that.setData({
-                    userDenyLocaltion: false,
-                    canDiancan: false
-                  })
-                  util.hideBusy();
-                }
-              }
-              else {
-                that.setData({
-                  userDenyLocaltion: false,
-                  canDiancan: false
-                })
-                util.hideBusy();
-              }
-            },
-            fail: function (res) {
-              console.log('calculateDistance-fail', res);
-              that.setData({
-                userDenyLocaltion: false,
-                canDiancan: false
-              })
-              util.hideBusy();
-            },
-            complete: function (res) {
-            }
-          });
-        },
-        fail: function (res) {
-          util.hideBusy();
-          console.log('wx.getLocation-fail', res);
-          that.setData({
-            userDenyLocaltion: true,
-            canDiancan: false
-          })
-        }
-      });
-    }
-    else
-      this.dorequest()
-  },
-
-  reLocaltion: function () {
-    var that = this
-    //获取用户授权
-    if (wx.getSetting) {
-      wx.getSetting({
-        success(res) {
-          console.log(res);
-          if (!res.authSetting['scope.userLocation']) {
-            wx.openSetting({
-              success: (res) => {
-                res.authSetting = {
-                  "scope.userLocation": true
-                }
-                that.requestWrap()
-              }
-            })
-          }
-        }
-      });
-    }
-  },
-
-  reAuthor: function () {
-    var that = this
-    //获取用户授权
-    if (wx.getSetting) {
-      wx.getSetting({
-        success(res) {
-          console.log(res);
-          if (!res.authSetting['scope.userInfo']) {
-            wx.openSetting({
-              success: (res) => {
-                res.authSetting = {
-                  "scope.userInfo": true
-                }
-                if (!app.globalData.hasLogin) {
-                  wx.login({
-                    success: function (loginResult) {
-                      wx.getUserInfo({
-                        success: function (userResult) {
-                          app.globalData.hasLogin = true;
-                          userResult.userInfo.code = loginResult.code;
-                          app.globalData.userInfo = userResult.userInfo;
-                          that.setData({
-                            yincangShouquan: true
-                          });
-                        },
-                        fail: function (userError) {
-                          app.globalData.hasLogin = false;
-                          if (app.globalData.aFendian.zhifu) {
-                            that.setData({
-                              yincangShouquan: false
-                            });
-                          }
-                        },
-                      });
-                    },
-                    fail: function (loginError) {
-                      app.globalData.hasLogin = false;
-                      if (app.globalData.aFendian.zhifu) {
-                        that.setData({
-                          yincangShouquan: false
-                        });
-                      }
-                      util.showFailModal('微信登陆失败，原因可能是首次登陆本门店，请关闭程序后重新扫描登陆。', loginError);
-                    },
-                    complete: function () {
-                    }
-                  });
-                }
-              }
-            })
-          }
-        }
-      });
-    }
+  onLoad: function (params) {
   },
 })

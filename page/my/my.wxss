@@ -432,10 +432,24 @@ icon {
   display: inline-block;
   margin-left: 5rpx;
   padding: 0 0.6em 0 0.7em;
+  margin-top: 10px;
   border-left: 1rpx solid #e5e5e5;
   vertical-align: middle;
   font-size: 34rpx;
   color: #3cc51f;
+  white-space: nowrap;
+  text-align: left;
+}
+
+.weui-vcode-btn1 {
+  display: inline-block;
+  margin-left: 5rpx;
+  padding: 0 0.6em 0 0.7em;
+  margin-top: 10px;
+  border-left: 1rpx solid #e5e5e5;
+  vertical-align: middle;
+  font-size: 34rpx;
+  color: #e64340;
   white-space: nowrap;
   text-align: left;
 }

@@ -12,11 +12,11 @@
     <image class="icon-headurl" src="{{userInfo?userInfo.avatarUrl:''}}"></image>
   </view>
   <view class="icon-content">
-    <view class="icon-content-name">
+    <view class="icon-content-name"  wx:if = "{{hasLogin == true}}">
       {{userInfo?userInfo.nickName:""}}
     </view>
-    <view class="icon-content-phone">
-      手机号：{{aKehu && aKehu.dianhua?aKehu.dianhua:""}}
+    <view wx:if = "{{hasLogin == false}}">
+      <button  open-type="getUserInfo" bindgetuserinfo="bindGetUserInfo">授权登录</button>
     </view>
   </view>
 </view>
@@ -70,16 +70,6 @@
   </view>
 </view>
 
-<view class="weui-cells weui-cells_after-title" bindtap="showYouhuiquan">
-  <view class="weui-cell weui-cell_select">
-    <view class="weui-cell__hd weui-cell__hd_in-select-after">
-      <view class="weui-label">优惠券</view>
-    </view>
-    <view class="weui-cell__bd">
-      <view class="weui-select weui-select_in-select-after"></view>
-    </view>
-  </view>
-</view>
 
 <view class="area-line"></view>
 <view class="weui-cells__title">我的订单</view>
@@ -88,21 +78,38 @@
     <view class="weui-form-preview__hd">
       <view class="weui-form-preview__item">
         <view class="weui-form-preview__value_in-hd">订单号:{{ fitem.dingdanno }}</view>
-        <block wx:if="{{ (fitem.zhuangtai=='已下单'||fitem.zhuangtai== '开始制作'||fitem.zhuangtai== '制作完成'||fitem.zhuangtai== '已上菜')&& fidx ==0}}">
+      </view>
+      <view class="weui-form-preview__item">
+        <view class="weui-form-preview__value_in-hd"> 订单时间：{{ fitem.shijian }}</view>
+      </view>
+      <view class="weui-form-preview__item" wx:if="{{fitem.dingDanLeiXing != '外卖'}}">
+        <view class="weui-form-preview__value_in-hd" > 到店时间：{{ fitem.daoDianShiJian }}</view>
+      </view>
+      <view class="weui-form-preview__item">
+        <view class="weui-form-preview__value_in-hd"> 类型：{{ fitem.dingDanLeiXing }}</view>
+      </view>
+      <view class="weui-form-preview__item" wx:if="{{fitem.dingDanLeiXing == '外卖'}}">
+        <view class="weui-form-preview__value_in-hd" > 外卖地址：{{ fitem.waiMaiDiZhi }}</view>
+      </view>
+      <view class="weui-form-preview__item" wx:if="{{fitem.dingDanLeiXing == '外卖'}}">
+        <view class="weui-form-preview__value_in-hd" > 联系电话：{{ fitem.lianXiDianHua }}</view>
+      </view>
+      <view class="weui-form-preview__item">
+        <view class="weui-form-preview__value_in-hd">备注：{{fitem.memo }}</view>
+      </view>
+      <view>
+        <block>
           <view class="weui-vcode-btn" data-id="{{fitem.dingdanno}}" bindtap="jiaCai">加菜</view>
           <!-- <view class="weui-vcode-btn" data-id="{{citem.id}}" bindtap="fuwuyuan">呼叫服务员</view>-->
           <navigator url="../fuwu/fuwu" class="weui-vcode-btn" hover-class="navigator-hover">呼叫服务员</navigator>
         </block>
-      </view>
-      <view class="weui-form-preview__item">
-        <view class="weui-form-preview__value_in-hd">台位：{{ fitem.fendianmingcheng }}-{{ fitem.zhuozimingcheng }}</view>
-      </view>
-      <view class="weui-form-preview__item">
-        <view class="weui-form-preview__value_in-hd"> 时间：{{ fitem.shijian }}</view>
-      </view>
-      <view class="weui-form-preview__item">
-        <view class="weui-form-preview__value_in-hd">备注：{{fitem.kehubeizhu }}</view>
-      </view>
+    </view>
+    <view>
+      <block>
+        <view class="weui-vcode-btn" data-id="{{fitem.dingdanno}}" bindtap="fukuan">付款</view>
+        <view  class="weui-vcode-btn1" data-id="{{fitem.dingdanno}}" bindtap="quxiaodingdan">取消订单</view>
+      </block>
+    </view>
     </view>
     <view class="weui-form-preview__bd">
       <view class="weui-form-preview__item" wx:for="{{fitem.items}}" wx:for-index="cidx" wx:for-item="citem" wx:key="id">
@@ -131,12 +138,10 @@
     <view class="weui-form-preview__sum">
       <view class="weui-form-preview__item_sum">
         <block wx:if="{{fitem.zongxiaoshoujia != fitem.zonghuiyuanjia}}">
-          <text class="weui-form-preview__sum_value">¥{{ fitem.zonghuiyuanjia }}</text>
+          <text class="weui-form-preview__sum_value">¥{{ fitem.zongxiaoshoujia }}</text>
           <text class="weui-form-preview__value_in-sum">应付:</text>
-          <text class="weui-form-preview__sum_value">¥{{(fitem.zongxiaoshoujia*1000- fitem.zonghuiyuanjia*1000)/1000 }}</text>
-          <text class="weui-form-preview__value_in-sum">优惠:</text>
         </block>
-        <text class="weui-form-preview__sum_value">¥{{ fitem.zongxiaoshoujia }}</text>
+        <text class="weui-form-preview__sum_value">¥{{ fitem.yingfujia }}</text>
         <text class="weui-form-preview__value_in-sum">总额:</text>
       </view>
     </view>
@@ -147,7 +152,7 @@
     <view class="bottom_no_order">暂无订单</view>
   </block>
   <view class="weui-footer__links">
-    <navigator url="" class="weui-footer__link">技术支持：微扫点餐</navigator>
+    <navigator url="" class="weui-footer__link">客服电话：15078235236</navigator>
   </view>
 </view>
 
@@ -155,7 +160,7 @@
 <view class="goods-detail" hidden="{{yincangXiaofeiJilu}}">
   <view class="mask" bindtap="hideXiaofeiJilu"></view>
   <view class="close-bg_xiaofejilu" bindtap="hideXiaofeiJilu">
-    <image class="image" src="../resources/pic/dish-close.png" />
+    <image class="image" src="../resources/images/dish-close.png" />
   </view>
   <view class="winXiaofeijilu">
     <view class="winXiaofeijilu-title">
@@ -183,7 +188,7 @@
 <view class="goods-detail" hidden="{{yincangChongzhi}}">
   <view class="mask" bindtap="hideChongzhi"></view>
   <view class="close-bg" bindtap="hideChongzhi">
-    <image class="image" src="../resources/pic/dish-close.png" />
+    <image class="image" src="../resources/images/dish-close.png" />
   </view>
   <view class="winChongzhi">
     <view class="winChongzhi-title">充值列表</view>
@@ -205,10 +210,10 @@
 <!-- 会员优惠-->
 <view class="goods-detail" hidden="{{yincangHuiyuanLeibie}}">
   <view class="mask" bindtap="hideHuiyuanLeibie"></view>
-  <view class="close-bg" bindtap="hideHuiyuanLeibie">
-    <image class="image" src="../resources/pic/dish-close.png" />
+  <view class="close-bg" bindtap="hideHuiyuanLeibie" wx:if="{{yincangZhuce == true}}">
+    <image class="image" src="../resources/images/dish-close.png" />
   </view>
-  <view class="winChongzhi">
+  <view class="winChongzhi" wx:if="{{yincangZhuce == true}}">
     <view class="winChongzhi-title">会员类别列表</view>
     <view class="winChongzhi-item">
       <radio-group bindchange="radioChange">
@@ -220,6 +225,7 @@
           </view>
         </label>
       </radio-group>
+      <view class="winChongzhi-btn" bindtap="zhucehuiyuan">注册会员</view>
     </view>
   </view>
 </view>
@@ -228,7 +234,7 @@
 <view class="goods-detail" hidden="{{yincangZhuce}}">
   <view class="mask" bindtap="hideZhuce"></view>
   <view class="close-zhuce" bindtap="hideZhuce">
-    <image class="image" src="../resources/pic/dish-close.png" />
+    <image class="image" src="../resources/images/dish-close.png" />
   </view>
   <view class="winZhuce">
     <!-- <view class="winZhuce-title">注册会员，立享折扣</view> -->
@@ -243,58 +249,6 @@
     </view>
     <view class="winZhuce-item">
       <button class="winZhuce-btn" open-type="getPhoneNumber" bindgetphonenumber="getPhoneNumber">開</button>
-    </view>
-  </view>
-</view>
-
-<!-- 优惠券 弹出框-->
-<view class="goods-detail" hidden="{{yincangYouhuiquan}}">
-  <view class="mask" bindtap="hideYouhuiquan"></view>
-  <view class="close-bg_xiaofejilu" bindtap="hideYouhuiquan">
-    <image class="image" src="../resources/pic/dish-close.png" />
-  </view>
-  <view class="winXiaofeijilu">
-    <view class="youhuiquan-title">
-      <view class="youhuiquan-title-item">
-        <view class="{{selectedLeixing == '未使用' ? 'youhuiquan-title-sed' : ''}}"  data-id="未使用" bindtap="selectLeixing">
-          未使用({{youhuiquan1List&&youhuiquan1List.length>0?youhuiquan1List.length:0}})
-        </view>
-      </view>
-      <view class="youhuiquan-title-item" data-id="已使用" bindtap="selectLeixing">
-        <view class="{{selectedLeixing == '已使用' ? 'youhuiquan-title-sed' : ''}}">
-          已使用({{youhuiquan2List&&youhuiquan2List.length>0?youhuiquan2List.length:0}})
-        </view>
-      </view>
-      <view class="youhuiquan-title-item" data-id="已过期" bindtap="selectLeixing">
-        <view class="{{selectedLeixing == '已过期' ? 'youhuiquan-title-sed' : ''}}">
-          已过期({{youhuiquan3List&&youhuiquan3List.length>0?youhuiquan3List.length:0}})
-        </view>
-      </view>
-    </view>
-    <view class="youhuiquan">
-      <scroll-view scroll-y="true" class="youhuiquan-scroll" style="height: 900rpx;">
-        <!--优惠券列表-->
-        <block wx:for="{{youhuiquanList}}" wx:key="id" wx:for-item="youhuiquan">
-          <view class='youhuiquan-item'>
-            <view class="stamp stamp02">
-              <view class="par">
-                <view>
-                  <view class="yuan">¥</view>
-                  <view class="jine">{{youhuiquan.jine}}</view>
-                  <view class="leixing">{{youhuiquan.leixing}} ({{youhuiquan.laiyuan}})</view>
-                </view>
-                <view class="tiaojian">使用条件：消费满¥{{youhuiquan.zuidixiaofei}}可使用</view>
-                <view class="tiaojian">使用时间：{{youhuiquan.kaishishijian}}-{{youhuiquan.jieshushijian}}</view>
-              </view>
-              <view class="copy">有效日期
-                <view class='maxlength'>{{youhuiquan.kaishiriqi}}</view>
-                <view>至</view>
-                <view class='maxlength'>{{youhuiquan.jieshuriqi}}</view>
-              </view>
-            </view>
-          </view>
-        </block>
-      </scroll-view>
     </view>
   </view>
 </view>

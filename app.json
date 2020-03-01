@@ -18,20 +18,20 @@
     "list": [
       {
         "pagePath": "page/shop/shop",
-        "iconPath": "page/resources/pic/shouye.png",
-        "selectedIconPath": "page/resources/pic/shouyeSelected.png",
+        "iconPath": "page/resources/images/shouye.png",
+        "selectedIconPath": "page/resources/images/shouyeSelected.png",
         "text": "门店"
       },
       {
         "pagePath": "page/diancan/index",
-        "iconPath": "page/resources/pic/orderList.png",
-        "selectedIconPath": "page/resources/pic/orderListSelected.png",
+        "iconPath": "page/resources/images/orderList.png",
+        "selectedIconPath": "page/resources/images/orderListSelected.png",
         "text": "点餐"
       },
       {
         "pagePath": "page/my/my",
-        "iconPath": "page/resources/pic/my.png",
-        "selectedIconPath": "page/resources/pic/mySelected.png",
+        "iconPath": "page/resources/images/my.png",
+        "selectedIconPath": "page/resources/images/mySelected.png",
         "text": "我的"
       }
     ]
@@ -42,5 +42,11 @@
     "uploadFile": 10000,
     "downloadFile": 10000
   },
-  "debug": true
+  "permission": {
+    "scope.userLocation": {
+      "desc": "你的位置信息将用于小程序位置接口的效果展示"
+    }
+  },
+  "debug": true,
+  "sitemapLocation": "sitemap.json"
 }
