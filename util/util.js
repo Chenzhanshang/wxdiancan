@@ -213,6 +213,7 @@ const wxuuid = function () {
 
 };
 
+
 //一定要在这里面注册，否则没有用
 module.exports = {
   currentDate: currentDate,
@@ -227,5 +228,5 @@ module.exports = {
   judgeJiushuiyingliao: judgeJiushuiyingliao,
   resetMenu: resetMenu,
   navigateBack1: navigateBack1,
-  wxuuid: wxuuid
+  wxuuid: wxuuid,
 }

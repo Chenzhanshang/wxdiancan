@@ -8,6 +8,8 @@ var util = require('../../util/util.js')
 var app = getApp()
 Page({
   data: {
+    //二维码弹出控制
+    modalHidden: true,
     userInfo: {},
     orderList: [],
     yincangXiaofeiJilu: true,
@@ -82,9 +84,37 @@ Page({
   },
   //付款
   fukuan: function (event){
-    util.showFailModal('提示', '暂未开通网上支付');
+    this.setData({
+      modalHidden: false
+    })
+  },/**
+   * 显示弹窗
+   */
+  buttonTap: function () {
+    this.setData({
+      modalHidden: false
+    })
   },
 
+  /**
+   * 点击取消
+   */
+  modalCandel: function () {
+    // do something
+    this.setData({
+      modalHidden: true
+    })
+  },
+
+  /**
+   *  点击确认
+   */
+  modalConfirm: function () {
+    // do something
+    this.setData({
+      modalHidden: true
+    })
+  },
   onLoad: function () {
     wx.setNavigationBarTitle({
       title: app.globalData.aFendian.fendianmingcheng + '-' + '下单记录'

@@ -106,34 +106,16 @@
     </view>
     <view>
       <block>
-        <view class="weui-vcode-btn" data-id="{{fitem.dingdanno}}" bindtap="fukuan">付款</view>
+        <view class="weui-vcode-btn" data-id="{{fitem.dingdanno}}" bindtap="fukuan" >付款</view>
+
+        <modal title="请保存下方二维码，扫码付款" hidden="{{modalHidden}}" bindconfirm="modalConfirm" bindcancel="modalCandel">
+    <view>
+      <image  src="../resources/images/收款码.jpg" mode='aspectFill'></image>
+    </view>
+  </modal>
         <view  class="weui-vcode-btn1" data-id="{{fitem.dingdanno}}" bindtap="quxiaodingdan">取消订单</view>
       </block>
     </view>
-    </view>
-    <view class="weui-form-preview__bd">
-      <view class="weui-form-preview__item" wx:for="{{fitem.items}}" wx:for-index="cidx" wx:for-item="citem" wx:key="id">
-        <view class="weui-form-preview__bd_item_warp">
-          <block wx:if="{{cidx ==0 && fitem.zhuangtai =='已下单'}}">
-            <!--<view class="weui-form-preview__label2" data-id="{{fitem.id}}" data-name="{{fitem.caiming}}" bindtap="CancelItem">取消</view>-->
-            <view class="weui-form-preview__label2">{{ fitem.zhuangtai }}</view>
-          </block>
-          <block wx:elif="{{cidx > 0 &&  citem.zhuangtai =='已下单'}}">
-            <!--<view class="weui-form-preview__label2" data-id="{{citem.id}}" data-name="{{citem.caiming}}" bindtap="CancelItem">取消</view>-->
-            <view class="weui-form-preview__label2">{{ citem.zhuangtai }}</view>
-          </block>
-          <block wx:elif="{{cidx == 0 &&  fitem.zhuangtai != '已下单'}}">
-            <view class="weui-form-preview__label2">{{ fitem.zhuangtai }}</view>
-          </block>
-          <block wx:elif="{{cidx > 0 &&  citem.zhuangtai != '已下单'}}">
-            <view class="weui-form-preview__label2">{{ citem.zhuangtai }}</view>
-          </block>
-          <view class="weui-form-preview__label" wx:if="{{cidx ==0}}"> {{fitem.caiming }}</view>
-          <view class="weui-form-preview__label" wx:else> {{ citem.caiming }} </view>
-          <view class="weui-form-preview__label2" wx:if="{{cidx ==0}}">x{{ fitem.shuliang }} ¥{{(fitem.shuliang *(fitem.huiyuanjia*100))/100 }}</view>
-          <view class="weui-form-preview__label2" wx:else>x{{ citem.shuliang }} ¥{{ (citem.shuliang*(100*citem.huiyuanjia))/100 }}</view>
-        </view>
-      </view>
     </view>
     <view class="weui-form-preview__sum">
       <view class="weui-form-preview__item_sum">
@@ -155,6 +137,8 @@
     <navigator url="" class="weui-footer__link">客服电话：15078235236</navigator>
   </view>
 </view>
+
+
 
 <!-- 账号余额 弹出框-->
 <view class="goods-detail" hidden="{{yincangXiaofeiJilu}}">
