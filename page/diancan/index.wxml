@@ -14,14 +14,6 @@
     登陆
   </view>
 </view>
-<view class="index" hidden="{{canDiancanChangjing}}">
-  <view>
-    扫描二维码，自助点餐
-  </view>
-  <view class="cart-tab-item-btn" hidden="{{!userDenyLocaltion}}" bindtap="reLocaltion">
-    扫码
-  </view>
-</view>
 <view class="index" hidden="{{!canDiancan}}">
   <view class="cart-tab-wrp">
     <view class="cart-item-total cart-tab-item">
@@ -42,8 +34,8 @@
       <view bindtap="jiacaitijiao" class="cart-tab-item-btn" hover-class="navigator-hover" wx:if="{{moshi == '（加菜）'}}">提交</view>
     </view>
   </view>
-  <view class="menu-wrp">
-    <scroll-view scroll-y="true" class="left" style="height: 1020rpx;">
+  <view class="menu-wrp" style="height:1180rpx">
+    <scroll-view scroll-y="true" class="left" style="height: 100%;">
       <!--菜单列表-->
       <block wx:for="{{menus}}" wx:key="id" wx:for-item="menu">
         <view data-id="{{menu.id}}" data-tag="{{menu.tag}}" bindtap="selectMenu">
@@ -57,7 +49,7 @@
       </block>
       <view class="menu-footer"></view>
     </scroll-view>
-    <scroll-view scroll-y="true" scroll-into-view="{{toView}}" class="right-side" style="height: 1020rpx;">
+    <scroll-view scroll-y="true" scroll-into-view="{{toView}}" class="right-side" style="height: 100%;">
       <block wx:for="{{menus}}" wx:key="id" wx:for-item="menu">
         <view>
           <view id="{{menu.tag}}" class="dish-category-title">{{menu.fenleimingcheng}}</view>
@@ -133,7 +125,6 @@
       </block>
       <view class="title4">
         <view>
-          <!--<text hidden="{{goodsDetailSalePrice != goodsDetailMenberPrice}}" class="dish-item-money_nouse_detail">¥{{goodsDetailSalePrice}}</text>-->
           <text class="dish-item-money_detail">¥{{goodsDetailMenberPrice}}/{{goodsDetailDanwei}}</text>
         </view>
         <view class="title6" data-id="{{goodsDetailId}}" data-cid="{{goodsDetailMenuId}}"  data-hide="true" bindtap="addCount">添加到订单</view>
@@ -141,7 +132,8 @@
     </view>
   </view>
   <view>
-    <image hidden="{{hidAnim}}" style="position: fixed;top: {{Y}}px;left:{{X}}px;color: #fff;font-size: 35px;width: 30px;height: 15px;line-height: 30px;text-align: center;border-radius: 30px;background-size: 100%;background-color:#A5A5A5;border: none;" src="http://gongyong-1253225512.file.myqcloud.com/xiaochengxu/shaoji.jpg"
+    <image hidden="{{hidAnim}}" style="position: fixed;top: {{Y}}px;left:{{X}}px;color: #fff;         font-size: 35px;width: 30px;height: 15px;line-height: 30px;text-align: center;border-radius:30px;background-size: 100%;background-color:#A5A5A5;border: none;"       
+      src="http://gongyong-1253225512.file.myqcloud.com/xiaochengxu/shaoji.jpg"
       animation="{{animationData}}" />
   </view>
 </view>
