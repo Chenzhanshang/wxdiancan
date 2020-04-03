@@ -4,7 +4,8 @@
     "page/diancan/index",
     "page/thisorder/thisorder",
     "page/my/my",
-    "page/fuwu/fuwu"
+    "page/fuwu/fuwu",
+    "page/newshop/newshop"
   ],
   "window": {
     "enablePullDownRefresh": true

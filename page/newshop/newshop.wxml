@@ -1,0 +1,41 @@
+<!--page/newshop.wxml-->
+  <view class="title">
+ ** 新增商品</view>
+<view class="container">
+  <view class="lineHeight" type="text" >商品名
+      <input class='input-7' placeholder='请输商品名' value="{{caiming}}" bindinput="charChange" ></input>
+    </view>
+    <view class="lineHeight" type="number">价格
+      <input class='input' placeholder='请输入商品价格' value="{{jiage}}" bindinput="jiageChange"></input>
+    </view>
+    <view class="lineHeight" type="number">会员价
+      <input class='input-7' placeholder='请输入商品价格' value="{{huiyuanjia}}" bindinput="huiyuanjiaChange"></input>
+    </view>
+    <view class="lineHeight" type="text">
+      <picker bindchange="bindPickerChange" value="{{index}}" range="{{array}}"  bindtap='clearFont'>
+        商品类型
+        <text class='select' >{{placeholder}} {{array[index]}}</text>
+      </picker>
+    </view>
+    <view class="lineHeight" type="text">
+      <picker bindchange="bindPickerChange1" value="{{index1}}" range="{{array1}}"  bindtap='clearFont1'>
+        推荐指数
+        <text class='select' >{{placeholder1}} {{array1[index1]}}</text>
+      </picker>
+    </view>
+  </view>
+<view class="weui-uploader">
+  <view class="img-v weui-uploader__bd">
+    <view class='pic' wx:for="{{imgs}}" wx:for-item="item" wx:key="*this">
+        <image class='weui-uploader__img '
+                src="{{item}}"
+                data-index="{{index}}" mode="aspectFill" bindtap="previewImg">
+                  <icon type='cancel' class="delete-btn" data-index="{{index}}" catchtap="deleteImg"></icon>
+        </image>
+    </view>
+      <!-- 用来提示用户上传图片 -->
+      <view class="weui-uploader__input-box pic" bindtap="chooseImg"> </view>
+  </view>
+  <button class="upload-img-btn" bindtap="chooseImg" type='primary'>拍照  / 上传</button>
+  <button class="upload-img-btn" bindtap="submit" type='primary'>提交</button>
+</view>

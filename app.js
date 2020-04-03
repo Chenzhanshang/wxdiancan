@@ -8,7 +8,11 @@ var util = require('./util/util.js')
 
 App({
   globalData: {
+    //新增商品的索引
+    newImageSum:1,
     hasLogin: false,
+    //是否为管理员
+    isAdmin: false,
     userInfo: {},
     zhuoziid: '262',
     menus: [
@@ -26,7 +30,6 @@ App({
         { id: '9', count: 0, caiming: '干煸四季豆', xiaoshoujia: 7, huiyuanjia: 7, danwei: '份', url: '/page/resources/images/gbsjd.jpg', tuijianzhishu: 3 },
         { id: '10', count: 0, caiming: '耗油菜心', xiaoshoujia: 7, huiyuanjia: 7, danwei: '份', url: '/page/resources/images/hycx.jpg', tuijianzhishu: 4 },
         { id: '11', count: 0, caiming: '酸辣土豆丝', xiaoshoujia: 5, huiyuanjia: 5, danwei: '份', url: '/page/resources/images/sctds.jpg', tuijianzhishu: 2 }],
-        
       },
       {
         id: '2', tag: 'm2', fenleimingcheng: '粉类', sum: null ,
@@ -69,7 +72,8 @@ App({
           { id: '2', count: 0, caiming: '水果沙拉', xiaoshoujia: 15, huiyuanjia: 12, danwei: '份', url: '/page/resources/images/sgsl.jpg', tuijianzhishu: 0 },
           { id: '3', count: 0, caiming: '米饭（碗）', xiaoshoujia: 2, huiyuanjia: 2, danwei: '碗', url: '/page/resources/images/mf.jpg', tuijianzhishu: 0 },
           { id: '4', count: 0, caiming: '米饭（古)', xiaoshoujia: 8, huiyuanjia: 8, danwei: '古', url: '/page/resources/images/mf_g.jpg', tuijianzhishu: 0},]
-      }
+      },
+      
     ],
     dingdanno: '',
     total: {
@@ -121,23 +125,5 @@ App({
   onShow: function () {
     console.log('onShow');
   },
-  //记录手机端错误
-  onError: function (msg) {
-    var that = this
-    qcloud.request({
-      url: config.service.errorUrl,
-      hasLogin: that.globalData.hasLogin,
-      data: {
-        fendianid: that.globalData.aFendian.fendianid,
-        zhuoziid: that.globalData.zhuoziid,
-        hasLogin: that.globalData.hasLogin,
-        userInfo: JSON.stringify(that.globalData.userInfo),
-        phonemodel: that.globalData.phonemodel,
-        phonesystem: that.globalData.phonesystem,
-        networkType: that.globalData.networkType,
-        scene: that.globalData.scene,
-        msg:msg
-      }        
-    });
-  },
+ 
 })

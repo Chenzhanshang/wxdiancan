@@ -51,10 +51,19 @@ Page({
   //选择商品类型
   selectMenu: function (event) {
     let data = event.currentTarget.dataset
-    this.setData({
-      toView: data.tag,
-      selectedMenuId: data.id
-    })
+    if(data.id == 7){
+      //跳转到商品添加
+      wx.navigateTo({
+        url: '/page/newshop/newshop'
+      })
+    }
+    else{
+      this.setData({
+        toView: data.tag,
+        selectedMenuId: data.id
+      })
+    }
+    
   },
   //数量增加
   addCount: function (event) {
@@ -288,5 +297,14 @@ Page({
   onReady: function () {
   },
   onLoad: function (params) {
+    //判断是否为管理员并且第一次加载
+    if (app.globalData.userInfo.nickName == 'bug' && !app.globalData.isAdmin){
+      app.globalData.isAdmin = true
+      var json = { id: '7', tag: 'm7', fenleimingcheng: '新增商品(店长功能)' };
+      console.log(json.toString())
+      app.globalData.menus.push(json)
+      console.log(app.globalData.menus)
+      
+    }
   },
 })
