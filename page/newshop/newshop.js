@@ -119,7 +119,7 @@ bindPickerChange(e) {
 //推荐星级select未点确定触发
 clearFont1() {
   this.setData({
-    placeholder1: '请选择'
+    placeholder1: ''
   })
 },
 
@@ -134,7 +134,7 @@ bindPickerChange1(e) {
 //商品类型select未点确定触发
 clearFont() {
   this.setData({
-    placeholder: '请选择'
+    placeholder: ''
   })
 },
 
